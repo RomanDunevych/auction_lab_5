@@ -1,0 +1,37 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Категорії лотів</h1>
+  {% if can('category:manage') %}<a class="btn btn-primary" href="/categories/new">+ Нова категорія</a>{% endif %}
+</div>
+
+{% if categories.length %}
+<table class="table">
+  <thead><tr><th>Назва</th><th>Опис</th><th>Лотів</th><th></th></tr></thead>
+  <tbody>
+    {% for c in categories %}
+    <tr>
+      <td><a href="/lots?category={{ c.id }}">{{ c.name }}</a></td>
+      <td>{{ c.description or '—' }}</td>
+      <td>{{ c.lots | length }}</td>
+      <td class="row-actions">
+        {% if can('category:manage') %}
+        <a class="btn btn-small" href="/categories/{{ c.id }}/edit">Редагувати</a>
+        <form method="post" action="/categories/{{ c.id }}/delete" class="inline"
+              onsubmit="return confirm('Видалити категорію?');">
+          <button class="btn btn-small btn-danger" type="submit">Видалити</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<section class="empty-state">
+  <h2>Категорій ще немає</h2>
+  {% if can('category:manage') %}<p><a class="btn btn-primary" href="/categories/new">Створити першу категорію</a></p>{% endif %}
+</section>
+{% endif %}
+{% endblock %}

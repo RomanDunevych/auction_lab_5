@@ -1,0 +1,30 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+{% from "forms.njk" import text, password, select, actions %}
+
+<div class="page-head">
+  <h1>{{ title }}</h1>
+</div>
+
+{% include "partials/errors.njk" %}
+
+<form method="post" action="{{ action }}" class="form card narrow" novalidate>
+  {{ text('username', 'Ім’я користувача', values, errors, hint='Латинські літери, цифри та символи . _ -') }}
+  {{ text('email', 'Email', values, errors, hint='Наприклад: name@example.com', inputmode='email') }}
+
+  {% if user %}
+    {{ password('password', 'Новий пароль', errors, hint='Залиште порожнім, щоб не змінювати пароль') }}
+  {% else %}
+    {{ password('password', 'Пароль', errors, hint='Щонайменше 6 символів, літери та цифри') }}
+  {% endif %}
+  {{ password('passwordConfirm', 'Повторіть пароль', errors) }}
+
+  {# Роль змінює лише адміністратор #}
+  {% if can('user:setRole') %}
+    {{ select('role', 'Роль', values, errors, [{ 'value': 'user', 'label': 'Користувач' }, { 'value': 'admin', 'label': 'Адміністратор' }]) }}
+  {% endif %}
+
+  {{ actions(('/users/' ~ user.id) if (user and not can('user:list')) else '/users') }}
+</form>
+{% endblock %}

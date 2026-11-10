@@ -1,0 +1,24 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+{% from "forms.njk" import text, password %}
+
+<div class="page-head">
+  <h1>Вхід</h1>
+</div>
+
+{% include "partials/errors.njk" %}
+
+{# Без клієнтської перевірки (немає required): порожні поля перевіряє сервер #}
+<form method="post" action="/login" class="form card narrow" novalidate>
+  {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+  {{ text('login', 'Ім’я користувача або email', values, errors) }}
+  {{ password('password', 'Пароль', errors) }}
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">Увійти</button>
+    <a class="btn btn-link" href="/register">Реєстрація</a>
+  </div>
+</form>
+
+<p class="muted narrow-note">Демо-облікові записи: <code>admin</code> / <code>Admin123</code> (адміністратор), <code>ivan</code> / <code>User1234</code> (користувач).</p>
+{% endblock %}

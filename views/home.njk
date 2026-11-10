@@ -1,0 +1,33 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+{% from "macros.njk" import lotCard %}
+
+<section class="hero">
+  <h1>Онлайн-аукціон</h1>
+  <p class="muted">Виставляйте лоти, робіть ставки та стежте за історією торгів.</p>
+  <p>
+    <a class="btn btn-primary" href="/lots">Усі лоти</a>
+    {% if can('lot:create') %}<a class="btn" href="/lots/new">Створити лот</a>{% endif %}
+    {% if not currentUser %}<a class="btn" href="/register">Зареєструватися</a>{% endif %}
+  </p>
+</section>
+
+<section class="stats">
+  <div class="card stat"><span class="stat-num">{{ stats.lotsCount }}</span><span class="muted">лотів</span></div>
+  <div class="card stat"><span class="stat-num">{{ stats.activeCount }}</span><span class="muted">активних</span></div>
+  <div class="card stat"><span class="stat-num">{{ stats.bidsCount }}</span><span class="muted">ставок</span></div>
+  <div class="card stat"><span class="stat-num">{{ stats.usersCount }}</span><span class="muted">користувачів</span></div>
+</section>
+
+<h2>Найближчі до завершення</h2>
+{% if latestLots.length %}
+<div class="grid">
+  {% for lot in latestLots %}
+    {{ lotCard(lot) }}
+  {% endfor %}
+</div>
+{% else %}
+<p class="muted">Активних лотів поки немає.</p>
+{% endif %}
+{% endblock %}

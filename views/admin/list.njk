@@ -1,0 +1,69 @@
+{% extends "admin/layout.njk" %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="breadcrumbs"><a href="/admin">Панель</a> / {{ resource.label }}</p>
+    <h1>{{ resource.label }}</h1>
+  </div>
+  <a class="btn btn-primary" href="/admin/{{ resource.key }}/new">+ {{ resource.newLabel }}</a>
+</div>
+
+{# Пошук (GET-форма): без клієнтської валідації, перевірку параметрів виконує сервер #}
+<form method="get" action="/admin/{{ resource.key }}" class="filters card" novalidate>
+  <input type="text" name="q" value="{{ params.q }}" placeholder="{{ resource.searchHint }}" autocomplete="off">
+  <input type="hidden" name="sort" value="{{ params.sort }}">
+  <input type="hidden" name="dir" value="{{ params.dir | lower }}">
+  <button class="btn" type="submit">Знайти</button>
+  {% if params.q %}<a class="btn btn-link" href="/admin/{{ resource.key }}">Скинути</a>{% endif %}
+</form>
+
+{% if rows.length %}
+<table class="table">
+  <thead>
+    <tr>
+      {% for c in columns %}
+      <th>{% if c.sortUrl %}<a class="sort-link" href="{{ c.sortUrl }}">{{ c.label }} {{ c.mark }}</a>{% else %}{{ c.label }}{% endif %}</th>
+      {% endfor %}
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      {% for cell in row.cells %}
+      <td>{% if cell.type == 'money' %}{{ cell.value | money }}{% elif cell.type == 'date' %}{{ cell.value | date }}{% else %}{{ cell.value }}{% endif %}</td>
+      {% endfor %}
+      <td class="row-actions">
+        <a class="btn btn-small" href="/admin/{{ resource.key }}/{{ row.id }}/edit">Редагувати</a>
+        <form method="post" action="/admin/{{ resource.key }}/{{ row.id }}/delete" class="inline"
+              onsubmit="return confirm('Видалити запис №{{ row.id }}?');">
+          <button class="btn btn-small btn-danger" type="submit">Видалити</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="pager-row">
+  <span class="muted">Записи {{ pager.from }}–{{ pager.to }} із {{ pager.total }}</span>
+  {% if pager.totalPages > 1 %}
+  <nav class="pager">
+    {% if pager.hasPrev %}<a class="btn btn-small" href="{{ pager.prevUrl }}">← Назад</a>{% endif %}
+    {% for l in pager.links %}
+      {% if l.gap %}<span class="pager-gap">…</span>
+      {% elif l.current %}<span class="btn btn-small btn-primary">{{ l.number }}</span>
+      {% else %}<a class="btn btn-small" href="{{ l.url }}">{{ l.number }}</a>{% endif %}
+    {% endfor %}
+    {% if pager.hasNext %}<a class="btn btn-small" href="{{ pager.nextUrl }}">Далі →</a>{% endif %}
+  </nav>
+  {% endif %}
+</div>
+{% else %}
+<section class="empty-state">
+  <h2>Записів не знайдено</h2>
+  {% if params.q %}<p class="muted">За запитом «{{ params.q }}» нічого немає.</p>{% endif %}
+</section>
+{% endif %}
+{% endblock %}

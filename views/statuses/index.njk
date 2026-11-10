@@ -1,0 +1,32 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+{% from "macros.njk" import statusBadge %}
+
+<div class="page-head">
+  <h1>Статуси лотів</h1>
+  <a class="btn btn-primary" href="/statuses/new">+ Новий статус</a>
+</div>
+
+<table class="table">
+  <thead><tr><th>Код</th><th>Вигляд</th><th>Лотів</th><th>Тип</th><th></th></tr></thead>
+  <tbody>
+    {% for s in statuses %}
+    <tr>
+      <td><code>{{ s.name }}</code></td>
+      <td>{{ statusBadge(s) }}</td>
+      <td>{{ s.lotsCount }}</td>
+      <td>{{ 'Системний' if s.isSystem else 'Власний' }}</td>
+      <td class="row-actions">
+        <a class="btn btn-small" href="/statuses/{{ s.id }}/edit">Редагувати</a>
+        <form method="post" action="/statuses/{{ s.id }}/delete" class="inline"
+              onsubmit="return confirm('Видалити статус?');">
+          <button class="btn btn-small btn-danger" type="submit">Видалити</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="muted small">Системні статуси (draft, active, sold, expired, cancelled) використовуються логікою аукціону: їх не можна перейменувати чи видалити.</p>
+{% endblock %}

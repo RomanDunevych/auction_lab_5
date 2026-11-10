@@ -1,0 +1,18 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+{% from "forms.njk" import text, select, actions %}
+
+<div class="page-head">
+  <h1>{{ title }}</h1>
+</div>
+
+{% include "partials/errors.njk" %}
+
+<form method="post" action="{{ action }}" class="form card narrow" novalidate>
+  {{ select('bidId', 'Ставка', values, errors, bidOptions, hint='Лот і користувач визначаються автоматично за обраною ставкою') }}
+  {{ select('eventType', 'Тип події', values, errors, eventOptions) }}
+  {{ text('amount', 'Сума, грн', values, errors, hint='Наприклад: 150 або 150.50', inputmode='decimal') }}
+  {{ actions('/history') }}
+</form>
+{% endblock %}

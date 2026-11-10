@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} — Онлайн-аукціон</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">Онлайн-аукціон</a>
+      {# Пункти меню залежать від ролі: показуємо лише те, до чого є доступ #}
+      <nav class="main-nav">
+        <a href="/lots" class="{{ 'active' if currentPath.startsWith('/lots') }}">Лоти</a>
+        <a href="/categories" class="{{ 'active' if currentPath.startsWith('/categories') }}">Категорії</a>
+        {% if can('status:manage') %}<a href="/statuses" class="{{ 'active' if currentPath.startsWith('/statuses') }}">Статуси</a>{% endif %}
+        {% if can('user:list') %}<a href="/users" class="{{ 'active' if currentPath.startsWith('/users') }}">Користувачі</a>{% endif %}
+        {% if can('bid:view') %}<a href="/bids" class="{{ 'active' if currentPath.startsWith('/bids') }}">Ставки</a>{% endif %}
+        {% if can('history:view') %}<a href="/history" class="{{ 'active' if currentPath.startsWith('/history') }}">Історія</a>{% endif %}
+      </nav>
+      <div class="user-box">
+        {% if currentUser %}
+          <a class="user-name" href="/users/{{ currentUser.id }}">{{ currentUser.username }}</a>
+          <span class="role-badge role-{{ role }}">{{ roleLabel }}</span>
+          {% if can('admin:access') %}<a class="btn btn-small btn-primary" href="/admin">Адмін-панель</a>{% endif %}
+          <form method="post" action="/logout" class="inline" novalidate>
+            <button class="btn btn-small" type="submit">Вийти</button>
+          </form>
+        {% else %}
+          <span class="role-badge role-guest">{{ roleLabel }}</span>
+          <a class="btn btn-small" href="/login">Увійти</a>
+          <a class="btn btn-small btn-primary" href="/register">Реєстрація</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    {% if notice %}<div class="alert alert-ok">{{ notice }}</div>{% endif %}
+    {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">Лабораторна робота №5 · Адмін-панель керування даними · Express.js + Sequelize + Nunjucks + Passport.js</div>
+  </footer>
+</body>
+</html>

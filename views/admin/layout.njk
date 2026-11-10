@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} — Адмін-панель</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="admin">
+  <header class="admin-header">
+    <a class="admin-brand" href="/admin">Адмін-панель</a>
+    <div class="user-box">
+      <a class="btn btn-small" href="/">← На сайт</a>
+      <span class="user-name">{{ currentUser.username }}</span>
+      <span class="role-badge role-{{ role }}">{{ roleLabel }}</span>
+      <form method="post" action="/logout" class="inline" novalidate>
+        <button class="btn btn-small" type="submit">Вийти</button>
+      </form>
+    </div>
+  </header>
+
+  <div class="admin-body">
+    {# Бічне меню: розділи за таблицями бази даних #}
+    <aside class="admin-sidebar">
+      <nav>
+        <a href="/admin" class="{{ 'active' if currentPath == '/admin' }}">Огляд</a>
+        {% for s in adminSections %}
+        <a href="/admin/{{ s.key }}" class="{{ 'active' if currentPath.startsWith('/admin/' + s.key) }}">{{ s.label }}</a>
+        {% endfor %}
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      {% if notice %}<div class="alert alert-ok">{{ notice }}</div>{% endif %}
+      {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{% extends "admin/layout.njk" %}
+
+{% block content %}
+{% from "forms.njk" import text, password, area, datetime, select, actions %}
+
+<div class="page-head">
+  <div>
+    <p class="breadcrumbs"><a href="/admin">Панель</a> / <a href="/admin/{{ resource.key }}">{{ resource.label }}</a></p>
+    <h1>{{ title }}</h1>
+  </div>
+</div>
+
+{% include "partials/errors.njk" %}
+
+{# Форма без клієнтської валідації (немає required тощо): усі перевірки виконує сервер.
+   Поля будуються за описом ресурсу (admin/resources.js). #}
+<form method="post" action="{{ action }}" class="form card narrow" novalidate>
+  {% for f in fields %}
+    {% if f.type == 'text' %}
+      {{ text(f.name, f.label, values, errors, hint=f.hint, inputmode=f.inputmode, disabled=f.disabled) }}
+    {% elif f.type == 'password' %}
+      {{ password(f.name, f.label, errors, hint=f.hint) }}
+    {% elif f.type == 'area' %}
+      {{ area(f.name, f.label, values, errors, hint=f.hint) }}
+    {% elif f.type == 'datetime' %}
+      {{ datetime(f.name, f.label, values, errors, hint=f.hint) }}
+    {% elif f.type == 'select' %}
+      {{ select(f.name, f.label, values, errors, f.options, hint=f.hint) }}
+    {% elif f.type == 'info' %}
+      <div class="field"><label>{{ f.label }}</label><p class="static-value">{{ f.value }}</p></div>
+    {% endif %}
+  {% endfor %}
+  {{ actions(backUrl, submitLabel) }}
+</form>
+{% endblock %}

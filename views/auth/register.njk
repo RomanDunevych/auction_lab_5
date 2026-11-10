@@ -1,0 +1,20 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+{% from "forms.njk" import text, password, actions %}
+
+<div class="page-head">
+  <h1>Реєстрація</h1>
+</div>
+
+{% include "partials/errors.njk" %}
+
+{# Поля ролі немає: нові користувачі завжди отримують роль «Користувач» #}
+<form method="post" action="/register" class="form card narrow" novalidate>
+  {{ text('username', 'Ім’я користувача', values, errors, hint='Латинські літери, цифри та символи . _ -') }}
+  {{ text('email', 'Email', values, errors, hint='Наприклад: name@example.com', inputmode='email') }}
+  {{ password('password', 'Пароль', errors, hint='Щонайменше 6 символів, літери та цифри') }}
+  {{ password('passwordConfirm', 'Повторіть пароль', errors) }}
+  {{ actions('/login', 'Зареєструватися') }}
+</form>
+{% endblock %}

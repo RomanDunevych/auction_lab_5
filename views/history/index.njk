@@ -1,0 +1,57 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+{% from "macros.njk" import eventBadge %}
+
+<div class="page-head">
+  <h1>Історія ставок</h1>
+  {% if can('history:manage') %}<a class="btn btn-primary" href="/history/new">+ Нова подія</a>{% endif %}
+</div>
+
+<form method="get" action="/history" class="filters card">
+  <select name="lot">
+    <option value="">Усі лоти</option>
+    {% for l in lots %}
+      <option value="{{ l.id }}" {% if filters.lot == l.id %}selected{% endif %}>{{ l.title }}</option>
+    {% endfor %}
+  </select>
+  <select name="event">
+    <option value="">Усі події</option>
+    {% for e in eventTypes %}
+      <option value="{{ e }}" {% if filters.event == e %}selected{% endif %}>{{ e | eventLabel }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn" type="submit">Фільтрувати</button>
+  <a class="btn btn-link" href="/history">Скинути</a>
+</form>
+
+{% if history.length %}
+<table class="table">
+  <thead><tr><th>Час</th><th>Подія</th><th>Лот</th><th>Користувач</th><th>Сума</th><th></th></tr></thead>
+  <tbody>
+    {% for h in history %}
+    <tr>
+      <td>{{ h.createdAt | date }}</td>
+      <td>{{ eventBadge(h.eventType) }}</td>
+      <td><a href="/lots/{{ h.lot.id }}">{{ h.lot.title }}</a></td>
+      <td>{{ h.user.username }}</td>
+      <td>{{ h.amount | money }}</td>
+      <td class="row-actions">
+        {% if can('history:manage') %}
+        <a class="btn btn-small" href="/history/{{ h.id }}/edit">Редагувати</a>
+        <form method="post" action="/history/{{ h.id }}/delete" class="inline"
+              onsubmit="return confirm('Видалити запис історії?');">
+          <button class="btn btn-small btn-danger" type="submit">Видалити</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<section class="empty-state">
+  <h2>Подій не знайдено</h2>
+</section>
+{% endif %}
+{% endblock %}

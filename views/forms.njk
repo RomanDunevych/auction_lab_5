@@ -1,0 +1,70 @@
+{#
+  Макроси полів форми.
+
+  ВАЖЛИВО: у полях немає жодних атрибутів клієнтської перевірки (required, min, max,
+  minlength, maxlength, pattern, step), а для чисел і пошти використовується type="text".
+  Усі перевірки виконує сервер, а помилка показується під відповідним полем.
+#}
+
+{# Однорядкове текстове поле #}
+{% macro text(name, label, values, errors, hint='', inputmode='', disabled=false) -%}
+<div class="field{{ ' has-error' if errors[name] }}">
+  <label for="f-{{ name }}">{{ label }}</label>
+  <input type="text" id="f-{{ name }}" name="{{ name }}" value="{{ values[name] }}" autocomplete="off"{% if inputmode %} inputmode="{{ inputmode }}"{% endif %}{% if disabled %} disabled{% endif %}>
+  {% if hint %}<small class="hint">{{ hint }}</small>{% endif %}
+  {% if errors[name] %}<small class="error-text">{{ errors[name] }}</small>{% endif %}
+</div>
+{%- endmacro %}
+
+{# Поле для пароля (значення назад у форму не підставляється) #}
+{% macro password(name, label, errors, hint='') -%}
+<div class="field{{ ' has-error' if errors[name] }}">
+  <label for="f-{{ name }}">{{ label }}</label>
+  <input type="password" id="f-{{ name }}" name="{{ name }}" value="" autocomplete="new-password">
+  {% if hint %}<small class="hint">{{ hint }}</small>{% endif %}
+  {% if errors[name] %}<small class="error-text">{{ errors[name] }}</small>{% endif %}
+</div>
+{%- endmacro %}
+
+{# Багаторядкове поле #}
+{% macro area(name, label, values, errors, rows=4, hint='') -%}
+<div class="field{{ ' has-error' if errors[name] }}">
+  <label for="f-{{ name }}">{{ label }}</label>
+  <textarea id="f-{{ name }}" name="{{ name }}" rows="{{ rows }}">{{ values[name] }}</textarea>
+  {% if hint %}<small class="hint">{{ hint }}</small>{% endif %}
+  {% if errors[name] %}<small class="error-text">{{ errors[name] }}</small>{% endif %}
+</div>
+{%- endmacro %}
+
+{# Дата й час #}
+{% macro datetime(name, label, values, errors, hint='') -%}
+<div class="field{{ ' has-error' if errors[name] }}">
+  <label for="f-{{ name }}">{{ label }}</label>
+  <input type="datetime-local" id="f-{{ name }}" name="{{ name }}" value="{{ values[name] | inputDate }}">
+  {% if hint %}<small class="hint">{{ hint }}</small>{% endif %}
+  {% if errors[name] %}<small class="error-text">{{ errors[name] }}</small>{% endif %}
+</div>
+{%- endmacro %}
+
+{# Випадаючий список; options — масив { value, label } #}
+{% macro select(name, label, values, errors, options, empty='— оберіть —', hint='') -%}
+<div class="field{{ ' has-error' if errors[name] }}">
+  <label for="f-{{ name }}">{{ label }}</label>
+  <select id="f-{{ name }}" name="{{ name }}">
+    <option value="">{{ empty }}</option>
+    {% for o in options %}
+    <option value="{{ o.value }}"{% if values[name] == o.value %} selected{% endif %}>{{ o.label }}</option>
+    {% endfor %}
+  </select>
+  {% if hint %}<small class="hint">{{ hint }}</small>{% endif %}
+  {% if errors[name] %}<small class="error-text">{{ errors[name] }}</small>{% endif %}
+</div>
+{%- endmacro %}
+
+{# Кнопки форми #}
+{% macro actions(cancelUrl, submitLabel='Зберегти') -%}
+<div class="form-actions">
+  <button class="btn btn-primary" type="submit">{{ submitLabel }}</button>
+  <a class="btn btn-link" href="{{ cancelUrl }}">Скасувати</a>
+</div>
+{%- endmacro %}

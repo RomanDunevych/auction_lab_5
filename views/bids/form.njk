@@ -1,0 +1,32 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+{% from "forms.njk" import text, select, actions %}
+
+<div class="page-head">
+  <h1>{{ title }}</h1>
+</div>
+
+{% include "partials/errors.njk" %}
+
+<form method="post" action="{{ action }}" class="form card narrow" novalidate>
+  {% if bid %}
+    {# Редагування: лот і автор ставки не змінюються, редагується лише сума #}
+    <dl class="details">
+      <dt>Лот</dt><dd><a href="/lots/{{ bid.lot.id }}">{{ bid.lot.title }}</a></dd>
+      <dt>Користувач</dt><dd>{{ bid.bidder.username }}</dd>
+    </dl>
+    {{ text('amount', 'Сума ставки, грн', values, errors, hint='Редагувати можна лише найвищу ставку непроданого лоту', inputmode='decimal') }}
+    {{ actions('/bids') }}
+  {% else %}
+    {{ select('lotId', 'Лот', values, errors, lotOptions) }}
+    {% if can('bid:createFor') %}
+      {{ select('userId', 'Користувач', values, errors, userOptions) }}
+    {% else %}
+      <div class="field"><label>Користувач</label><p class="static-value">{{ currentUser.username }}</p></div>
+    {% endif %}
+    {{ text('amount', 'Сума ставки, грн', values, errors, hint='Не менша за початкову ціну (перша ставка) або поточну ціну + крок', inputmode='decimal') }}
+    {{ actions('/bids', 'Зробити ставку') }}
+  {% endif %}
+</form>
+{% endblock %}

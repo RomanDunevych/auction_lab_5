@@ -1,0 +1,43 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+{% from "forms.njk" import text, area, datetime, select, actions %}
+
+<div class="page-head">
+  <h1>{{ title }}</h1>
+</div>
+
+{% include "partials/errors.njk" %}
+
+<form method="post" action="{{ action }}" class="form card" novalidate>
+  {{ text('title', 'Назва лоту', values, errors) }}
+
+  {{ area('description', 'Опис', values, errors) }}
+
+  <div class="grid-2">
+    {% if hasBids %}
+      {{ text('startPrice', 'Початкова ціна, грн', values, errors, hint='Початкову ціну не можна змінити: на лот уже є ставки.', disabled=true) }}
+    {% else %}
+      {{ text('startPrice', 'Початкова ціна, грн', values, errors, hint='Наприклад: 150 або 150.50', inputmode='decimal') }}
+    {% endif %}
+    {{ text('minStep', 'Мінімальний крок ставки, грн', values, errors, hint='Наприклад: 10', inputmode='decimal') }}
+  </div>
+
+  <div class="grid-2">
+    {{ datetime('startTime', 'Початок торгів', values, errors) }}
+    {{ datetime('endTime', 'Завершення торгів', values, errors) }}
+  </div>
+
+  <div class="grid-3">
+    {% if can('lot:setSeller') %}
+      {{ select('sellerId', 'Продавець', values, errors, userOptions) }}
+    {% else %}
+      <div class="field"><label>Продавець</label><p class="static-value">{{ currentUser.username }}</p></div>
+    {% endif %}
+    {{ select('categoryId', 'Категорія', values, errors, categoryOptions) }}
+    {{ select('statusId', 'Статус', values, errors, statusOptions) }}
+  </div>
+
+  {{ actions('/lots') }}
+</form>
+{% endblock %}

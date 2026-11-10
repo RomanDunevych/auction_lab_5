@@ -1,0 +1,43 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+{% from "macros.njk" import lotCard %}
+
+<div class="page-head">
+  <h1>Лоти</h1>
+  {% if can('lot:create') %}<a class="btn btn-primary" href="/lots/new">+ Новий лот</a>{% endif %}
+</div>
+
+<form method="get" action="/lots" class="filters card">
+  <input type="text" name="q" placeholder="Пошук за назвою" value="{{ filters.q }}">
+  <select name="category">
+    <option value="">Усі категорії</option>
+    {% for c in categories %}
+      <option value="{{ c.id }}" {% if filters.category == c.id %}selected{% endif %}>{{ c.name }}</option>
+    {% endfor %}
+  </select>
+  <select name="status">
+    <option value="">Усі статуси</option>
+    {% for s in statuses %}
+      <option value="{{ s.id }}" {% if filters.status == s.id %}selected{% endif %}>{{ s.name | statusLabel }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn" type="submit">Знайти</button>
+  <a class="btn btn-link" href="/lots">Скинути</a>
+</form>
+
+<p class="muted small">Знайдено лотів: {{ lots | length }}</p>
+
+{% if lots.length %}
+<div class="grid">
+  {% for lot in lots %}
+    {{ lotCard(lot) }}
+  {% endfor %}
+</div>
+{% else %}
+<section class="empty-state">
+  <h2>Лотів не знайдено</h2>
+  <p class="muted">Змініть параметри пошуку або створіть новий лот.</p>
+</section>
+{% endif %}
+{% endblock %}

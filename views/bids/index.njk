@@ -1,0 +1,49 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Ставки</h1>
+  <a class="btn btn-primary" href="/bids/new">+ Нова ставка</a>
+</div>
+
+<form method="get" action="/bids" class="filters card">
+  <select name="lot">
+    <option value="">Усі лоти</option>
+    {% for l in lots %}
+      <option value="{{ l.id }}" {% if filters.lot == l.id %}selected{% endif %}>{{ l.title }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn" type="submit">Фільтрувати</button>
+  <a class="btn btn-link" href="/bids">Скинути</a>
+</form>
+
+{% if bids.length %}
+<table class="table">
+  <thead><tr><th>№</th><th>Лот</th><th>Користувач</th><th>Сума</th><th>Час</th><th></th></tr></thead>
+  <tbody>
+    {% for b in bids %}
+    <tr>
+      <td>{{ b.id }}</td>
+      <td><a href="/lots/{{ b.lot.id }}">{{ b.lot.title }}</a></td>
+      <td>{% if can('user:view', b.bidder) %}<a href="/users/{{ b.bidder.id }}">{{ b.bidder.username }}</a>{% else %}{{ b.bidder.username }}{% endif %}</td>
+      <td>{{ b.amount | money }}</td>
+      <td>{{ b.createdAt | date }}</td>
+      <td class="row-actions">
+        {% if can('bid:edit', b) %}
+        <a class="btn btn-small" href="/bids/{{ b.id }}/edit">Редагувати</a>
+        <form method="post" action="/bids/{{ b.id }}/delete" class="inline"
+              onsubmit="return confirm('Видалити ставку разом із записами історії?');">
+          <button class="btn btn-small btn-danger" type="submit">Видалити</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<section class="empty-state">
+  <h2>Ставок не знайдено</h2>
+</section>
+{% endif %}
+{% endblock %}

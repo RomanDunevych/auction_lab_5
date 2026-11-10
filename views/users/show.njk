@@ -1,0 +1,75 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+{% from "macros.njk" import statusBadge %}
+
+<div class="page-head">
+  <div>
+    <p class="breadcrumbs">{% if can('user:list') %}<a href="/users">Користувачі</a>{% else %}Мій профіль{% endif %}</p>
+    <h1>{{ profile.username }}</h1>
+  </div>
+  <div class="actions">
+    {% if can('user:edit', profile) %}<a class="btn" href="/users/{{ profile.id }}/edit">Редагувати</a>{% endif %}
+    {# Видаляти користувачів може лише адміністратор, і не себе #}
+    {% if can('user:delete') and profile.id != currentUser.id %}
+    <form method="post" action="/users/{{ profile.id }}/delete" class="inline"
+          onsubmit="return confirm('Видалити користувача?');">
+      <button class="btn btn-danger" type="submit">Видалити</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<section class="card">
+  <dl class="details">
+    <dt>Email</dt><dd>{{ profile.email }}</dd>
+    <dt>Роль</dt><dd>{{ 'Адміністратор' if profile.role == 'admin' else 'Користувач' }}</dd>
+    <dt>Зареєстровано</dt><dd>{{ profile.createdAt | date }}</dd>
+  </dl>
+</section>
+
+<h2>Лоти на продаж ({{ profile.lotsForSale | length }})</h2>
+{% if profile.lotsForSale.length %}
+<table class="table">
+  <thead><tr><th>Лот</th><th>Статус</th><th>Поточна ціна</th></tr></thead>
+  <tbody>
+    {% for lot in profile.lotsForSale %}
+    <tr>
+      <td><a href="/lots/{{ lot.id }}">{{ lot.title }}</a></td>
+      <td>{{ statusBadge(lot.status) }}</td>
+      <td>{{ lot.currentPrice | money }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">Лотів немає.</p>
+{% endif %}
+
+<h2>Зроблені ставки ({{ profile.bids | length }})</h2>
+{% if profile.bids.length %}
+<table class="table">
+  <thead><tr><th>Лот</th><th>Сума</th><th>Час</th></tr></thead>
+  <tbody>
+    {% for bid in profile.bids %}
+    <tr>
+      <td><a href="/lots/{{ bid.lot.id }}">{{ bid.lot.title }}</a></td>
+      <td>{{ bid.amount | money }}</td>
+      <td>{{ bid.createdAt | date }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">Ставок немає.</p>
+{% endif %}
+
+{% if profile.wonLots.length %}
+<h2>Виграні лоти ({{ profile.wonLots | length }})</h2>
+<ul>
+  {% for lot in profile.wonLots %}
+  <li><a href="/lots/{{ lot.id }}">{{ lot.title }}</a> — {{ lot.currentPrice | money }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

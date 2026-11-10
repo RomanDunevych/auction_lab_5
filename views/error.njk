@@ -1,0 +1,9 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+<section class="empty-state">
+  <p class="error-code">{{ code }}</p>
+  <h1>{{ message }}</h1>
+  <p><a class="btn btn-primary" href="/">На головну</a></p>
+</section>
+{% endblock %}

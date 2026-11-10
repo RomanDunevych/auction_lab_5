@@ -1,0 +1,23 @@
+{# Макрос: кольоровий бейдж статусу лоту #}
+{% macro statusBadge(status) -%}
+<span class="badge status-{{ status.name }}">{{ status.name | statusLabel }}</span>
+{%- endmacro %}
+
+{# Макрос: бейдж події в історії ставок #}
+{% macro eventBadge(eventType) -%}
+<span class="badge event-{{ eventType }}">{{ eventType | eventLabel }}</span>
+{%- endmacro %}
+
+{# Макрос: картка лоту (список лотів і головна сторінка) #}
+{% macro lotCard(lot) -%}
+<article class="card lot-card">
+  <div class="card-top">
+    <span class="badge status-{{ lot.status.name }}">{{ lot.status.name | statusLabel }}</span>
+    <span class="muted small">{{ lot.category.name }}</span>
+  </div>
+  <h3><a href="/lots/{{ lot.id }}">{{ lot.title }}</a></h3>
+  <p class="price">{{ lot.currentPrice | money }}</p>
+  <p class="muted small">Завершення: {{ lot.endTime | date }}</p>
+  {% if lot.bids %}<p class="muted small">Ставок: {{ lot.bids | length }}</p>{% endif %}
+</article>
+{%- endmacro %}

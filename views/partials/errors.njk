@@ -1,0 +1,9 @@
+{# Підсумок помилок форми: errors — об’єкт { поле: повідомлення } #}
+{% if errors and (errors | length) %}
+<div class="alert alert-error" role="alert">
+  <strong>Форму не збережено. Виправте помилки:</strong>
+  <ul>
+    {% for field, message in errors %}<li>{{ message }}</li>{% endfor %}
+  </ul>
+</div>
+{% endif %}

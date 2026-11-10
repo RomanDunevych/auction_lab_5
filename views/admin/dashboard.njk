@@ -1,0 +1,63 @@
+{% extends "admin/layout.njk" %}
+
+{% block content %}
+
+<div class="page-head">
+  <h1>Панель керування</h1>
+</div>
+
+<p class="muted">Керування даними всіх таблиць системи. Доступ до цієї області має лише адміністратор.</p>
+
+<div class="admin-cards">
+  {% for c in cards %}
+  <section class="card admin-card">
+    <h2>{{ c.label }}</h2>
+    <p class="admin-count">{{ c.count }}</p>
+    <div class="actions">
+      <a class="btn btn-small" href="/admin/{{ c.key }}">Відкрити список</a>
+      <a class="btn btn-small btn-primary" href="/admin/{{ c.key }}/new">+ Додати</a>
+    </div>
+  </section>
+  {% endfor %}
+</div>
+
+<div class="two-col">
+  <section>
+    <h2>Останні лоти</h2>
+    {% if latestLots.length %}
+    <table class="table">
+      <thead><tr><th>ID</th><th>Назва</th><th>Продавець</th><th>Ціна</th></tr></thead>
+      <tbody>
+        {% for l in latestLots %}
+        <tr>
+          <td>{{ l.id }}</td>
+          <td><a href="/admin/lots/{{ l.id }}/edit">{{ l.title }}</a></td>
+          <td>{{ l.seller.username }}</td>
+          <td>{{ l.currentPrice | money }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="muted">Лотів ще немає.</p>{% endif %}
+  </section>
+
+  <section>
+    <h2>Останні ставки</h2>
+    {% if latestBids.length %}
+    <table class="table">
+      <thead><tr><th>ID</th><th>Лот</th><th>Користувач</th><th>Сума</th></tr></thead>
+      <tbody>
+        {% for b in latestBids %}
+        <tr>
+          <td>{{ b.id }}</td>
+          <td>{{ b.lot.title }}</td>
+          <td>{{ b.bidder.username }}</td>
+          <td>{{ b.amount | money }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="muted">Ставок ще немає.</p>{% endif %}
+  </section>
+</div>
+{% endblock %}
